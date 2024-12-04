@@ -4,6 +4,7 @@ import axios from 'axios';
 import type { ModalCreate } from "../utilities/types";
 import IconClose from '../assets/iconClose';
 import { CategoriesContext } from '../utilities/Context';
+import { url } from "../utility/url";
 
 const FormCreate = ({ updateTable }: ModalCreate) => {
   const initForm = {
@@ -15,8 +16,32 @@ const FormCreate = ({ updateTable }: ModalCreate) => {
 
   const [modalMode, setModalMode] = useState(false);
   const [form, setForm] = useState(initForm);
-  const categories = useContext(CategoriesContext);
+  // const categories = useContext(CategoriesContext);
+  const categories = [
+    'Groceries',
+    'Dining Out',
+    'Transportation',
+    'Utilities',
+    'Rent/Mortgage',
+    'Entertainment',
+    'Shopping',
+    'Health and Fitness',
+    'Travel',
+    'Education',
+    'Insurance',
+    'Personal Care',
+    'Home Improvement',
+    'Gifts and Donations',
+    'Taxes',
+    'Subscriptions and Memberships',
+    'Childcare',
+    'Pet Expenses',
+    'Financial Services',
+    'Miscellaneous Expenses'
+  ];
 
+  
+  
 
   const handleClickMode: React.MouseEventHandler<HTMLButtonElement> = () => {
     setModalMode(!modalMode);
@@ -30,7 +55,7 @@ const FormCreate = ({ updateTable }: ModalCreate) => {
     // e.preventDefault();
     // console.log(form);
     // TODO: validation
-    axios.post(`${import.meta.env.VITE_SERVER_URL}/expenses`, form)
+    axios.post(`${url}/expenses`, form)
       .then(response => {
         // console.log('POST result: ', response.data)
         updateTable(response.data);

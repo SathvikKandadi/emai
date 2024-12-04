@@ -6,6 +6,7 @@ import IconClose from '../assets/iconClose';
 
 import type { ModalEditProps } from '../utilities/types'
 import { CategoriesContext } from '../utilities/Context';
+import { url } from '../utility/url';
 
 const ModalEdit = ({ updateTable, expense }: ModalEditProps) => {
 
@@ -32,7 +33,7 @@ const ModalEdit = ({ updateTable, expense }: ModalEditProps) => {
   const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     // console.log('Form value', form);
-    axios.put(`${import.meta.env.VITE_SERVER_URL}/expenses/${expense.id}`, form)
+    axios.put(`${url}/expenses/${expense.id}`, form)
       .then(response => {
         // console.log('Put result: ', response.data)
         updateTable(response.data);

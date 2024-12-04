@@ -1,3 +1,4 @@
+import '@babel/polyfill';
 import ModalDelete from './ModalDelete'
 import ModalEdit from './ModalEdit';
 

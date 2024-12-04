@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import dotenv from 'dotenv';
+// import axios from 'axios';
 dotenv.config();
 
 
@@ -15,39 +16,52 @@ export async function fetchOpenAI(query:String):Promise<any> {
   });
   const openai = new OpenAIApi(configuration);
 
-  try {
-    const response = await openai.createCompletion({
-      model: model,
-      prompt: prompt,
-      temperature: 0,
-      max_tokens: 500,
-      top_p: 1.0,
-      frequency_penalty: 0.0,
-      presence_penalty: 0.0,
-      stop: ["\"\"\""],
-    });
+  const maxRetries = 3;
+  let attempts = 0;
 
-    const { data } = response;
+  while (attempts < maxRetries) {
+    try {
+      const response = await openai.createCompletion({
+        model: model,
+        prompt: prompt,
+        temperature: 0,
+        max_tokens: 500,
+        top_p: 1.0,
+        frequency_penalty: 0.0,
+        presence_penalty: 0.0,
+        stop: ["\"\"\""],
+      });
 
-    if (data && data.choices && data.choices.length) {
-      const result = JSON.parse(data.choices[0].text!.replace(/\n/g, ""));
-      // console.log('Result', result);
-      // console.log('type', typeof result);
-      return result;
-    } else {
-      console.log('\nno result: \n', JSON.stringify(data));
-      return null;
+      const { data } = response;
+
+      if (data && data.choices && data.choices.length) {
+        const result = JSON.parse(data.choices[0].text!.replace(/\n/g, ""));
+        // console.log('Result', result);
+        // console.log('type', typeof result);
+        return result;
+      } else {
+        console.log('\nno result: \n', JSON.stringify(data));
+        return null;
+      }
+
+    } catch (error:any) {
+      if (error.response && error.response.status === 429) {
+        attempts++;
+        const waitTime = Math.pow(2, attempts) * 1000; // Exponential backoff
+        console.log(`Rate limit exceeded. Waiting for ${waitTime} ms before retrying...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      } else {
+        if (error instanceof Error) {
+          console.log(error.message);
+        } else {
+          console.log('Unexpected error', error);
+        }
+        throw error;
+        // throw "Server is busy, please try again later.";
+      }
     }
-
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log(error.message);
-    } else {
-      console.log('Unexpected error', error);
-    }
-    throw error;
-    // throw "Server is busy, please try again later.";
   }
+  throw new Error('Max attempts reached. Unable to complete the request.');
 }
 
 // const query = "Yesterday I spent $30 on groceries at the local supermarket";

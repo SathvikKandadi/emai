@@ -3,27 +3,46 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-let dbUser = process.env.DB_USER!;
-let dbPass = process.env.DB_PASS!;
-let dbHost = process.env.DB_HOST!;
-let dbName = process.env.DB_NAME!;
+const dbUrl = process.env.DATABASE_URL!;
 
-const db = new Sequelize(dbName, dbUser, dbPass, {
-  host: dbHost,
+const db = new Sequelize(dbUrl, {
   dialect: 'postgres',
-  // benchmark: true,
-  // logging(sql, timing) {
-  //   console.log(`[Execution time: ${timing}ms]
-  //    -  ${sql} \n`)
-  // },
   logging: false
 });
 
-// // Testing connection
-// db.authenticate()
-//   .then(() =>
-//     console.log('Connection has been established successfully.'))
-//   .catch((error) =>
-//     console.error('Unable to connect to the database:', error));
+// Testing connection
+db.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch((error) => {
+    console.error('Unable to connect to the database:', error);
+  });
 
 export default db;
+
+// Testing connection
+
+
+// import { Sequelize } from 'sequelize';
+// import dotenv from 'dotenv';
+
+// dotenv.config();
+
+// const dbUser = process.env.DB_USER!;
+// const dbPass = process.env.DB_PASS!;
+// const dbHost = process.env.DB_HOST!;
+// const dbName = process.env.DB_NAME!;
+
+// const sequelize = new Sequelize(dbName, dbUser, dbPass, {
+//   host: dbHost,
+//   dialect: 'postgres',
+// });
+
+// sequelize.authenticate()
+//   .then(() => {
+//     console.log('Connection has been established successfully.');
+//   })
+//   .catch((error) => {
+//     console.error('Unable to connect to the database:', error);
+//   });

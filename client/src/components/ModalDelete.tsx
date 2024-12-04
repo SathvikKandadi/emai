@@ -6,6 +6,7 @@ import IconClose from '../assets/iconClose';
 import IconExclamation from '../assets/iconExclamation';
 
 import type { ModalDeleteProps } from '../utilities/types'
+import { url } from '../utility/url';
 
 const ModalDelete = ({ removeRow, id }: ModalDeleteProps ) => {
 
@@ -17,7 +18,7 @@ const ModalDelete = ({ removeRow, id }: ModalDeleteProps ) => {
   }
 
   const handleConfirmDelete: React.MouseEventHandler<HTMLButtonElement> = () => {
-    axios.delete(`${import.meta.env.VITE_SERVER_URL}/expenses/${id}`)
+    axios.delete(`${url}/expenses/${id}`)
       .then(() => {
         removeRow(id);
         setModalMode(false)

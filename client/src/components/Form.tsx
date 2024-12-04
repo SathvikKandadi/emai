@@ -8,11 +8,14 @@ import IconMute from "../assets/iconMute";
 import IconSend from "../assets/iconSend";
 import IconLoad from "../assets/iconLoad";
 import IconReset from "../assets/iconReset";
+import { url } from "../utility/url";
+import { callOpenAIAPI } from "../service/openAI";
 
 const Form = ({ updateTable }: FormProps) => {
 
   const [loadingMode, setLoadingMode] = useState(false);
   const [query, setQuery] = useState("")
+  const todayDate = new Date().toISOString().split('T')[0];
 
   const {
     transcript,
@@ -62,10 +65,34 @@ const Form = ({ updateTable }: FormProps) => {
       setQuery('');
       resetTranscript();
 
-      axios.post(`${import.meta.env.VITE_SERVER_URL}/smart/expenses`, { query })
+      callOpenAIAPI(query).then((response) => {
+        console.log(response);
+        const contentString = response.choices[0].message.content;
+        console.log(contentString);
+
+        const transactionData = JSON.parse(contentString);
+        const name = transactionData.name;
+        const date = transactionData.date;
+        const amount = transactionData.amount;
+        const category = transactionData.category;
+
+        // Output the extracted information
+        const expense = transactionData;
+        console.log(expense);
+        console.log(`Name: ${name}`);
+        console.log(`Date: ${date}`);
+        console.log(`Amount: $${amount}`);
+        console.log(`Category: ${category}`);
+        const data = {
+          "name": "shopping",
+          "date": "2024-12-04",
+          "amount": 5.00,
+          "category": "Shopping"
+      };
+        axios.post(`${url}/expenses`, expense)
         .then((result) => {
           setLoadingMode(false);
-          // console.log('POST result: ', result.data)
+          console.log('POST result: ', result.data)
           updateTable(result.data);
 
         })
@@ -73,6 +100,12 @@ const Form = ({ updateTable }: FormProps) => {
           setLoadingMode(false);
           console.log('Error:', err)
         });
+
+      })
+        .catch(err => {
+          console.log("error:", err);
+        })
+      
     } else {
       setLoadingMode(false);
     }

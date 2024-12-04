@@ -9,6 +9,7 @@ import FormCreate from './components/FormCreate';
 
 import type { Expense } from './utilities/types';
 import { CategoriesContext } from './utilities/Context'
+import { url } from './utility/url';
 
 function App() {
   const [text, setText] = useState('SpeakSpend - Effortless Expense Tracking with AI');
@@ -26,14 +27,14 @@ function App() {
     //   .then((result) => setText(result.data))
     //   .catch(err => console.log('Error:', err));
 
-    axios(`${import.meta.env.VITE_SERVER_URL}/expenses`)
+    axios(`${url}/expenses`)
       .then((result) => {
         // console.log(result.data)
         setExpenses(result.data)
       })
       .catch(err => console.log('Error:', err));
 
-    axios.get(`${import.meta.env.VITE_SERVER_URL}/categories`)
+    axios.get(`${url}/categories`)
       .then(response => {
         // console.log(response.data);
         setCategories(response.data)
